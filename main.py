@@ -1,23 +1,19 @@
 import os
 import truststore
-# התאמת תעודות SSL של מערכת ההפעלה
 truststore.inject_into_ssl()
 
 from dotenv import load_dotenv
 import gradio as gr
 from google import genai
 
-# 1. טעינת המפתח מקובץ ה-.env
 load_dotenv()
 
-# 2. יצירת חיבור ל-Gemini
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def generate_cli_command(user_input):
     if not user_input.strip():
         return "אנא הזן הוראה בשפה טבעית."
     
-    # 3. הפרומפט המנחה (System Prompt)
     system_instruction = (
 "You are a specialized assistant for converting requests into Command Line Interface (CLI) commands."
 "Your sole function is to translate natural language requests into precise terminal commands that can be executed directly."
@@ -44,7 +40,6 @@ def generate_cli_command(user_input):
     )
     
     try:
-        # 4. קריאה ל-Gemini עם שם המודל המעודכן כפי שנדרש בהודעת השגיאה
         response = client.models.generate_content(
             model='gemini-3.8-flash',
             contents=user_input,
@@ -56,7 +51,6 @@ def generate_cli_command(user_input):
     except Exception as e:
         return f"שגיאה בהתחברות ל-Gemini: {str(e)}"
 
-# 5. הגדרת ממשק Gradio
 demo = gr.Interface(
     fn=generate_cli_command,
     inputs=gr.Textbox(lines=2, placeholder="לדוגמה: צור תיקייה חדשה בשם test..."),
